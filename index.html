@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220"><title>SCIENCE QUEST PRO</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">🧪 SCIENCE QUEST <span>PRO</span></a><nav><button class="ghost" id="leaderboardNav">리더보드</button><a class="ghost link" href="/developer.html">개발자</a><button class="ghost" id="logoutBtn" hidden>로그아웃</button></nav></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">LEARN · EXPLORE · LEVEL UP</div><h1>과학의 세계를<br><span>퀘스트로 정복하자.</span></h1><p>생명과학부터 물리·화학·지구과학까지. 퀴즈를 풀고 실력을 기록해 봐.</p><div class="hero-stats"><div><b>4</b><small>과학 분야</small></div><div><b>∞</b><small>도전 정신</small></div><div><b>XP</b><small>나만의 성장</small></div></div></section>
+<section class="panel auth-panel" id="authPanel"><div class="panel-head"><div><div class="eyebrow">YOUR ACCOUNT</div><h2>퀘스트 시작하기</h2></div><div class="tabs"><button class="tab active" data-auth="login">로그인</button><button class="tab" data-auth="register">회원가입</button></div></div><form id="authForm"><label>아이디<input id="username" minlength="2" maxlength="20" required autocomplete="username" placeholder="아이디 입력"></label><label>비밀번호<input id="password" type="password" minlength="8" required autocomplete="current-password" placeholder="8자 이상"></label><button class="primary full" id="authSubmit">로그인</button><p class="message" id="authMessage" role="status"></p></form></section>
+<section class="panel" id="quizPanel" hidden><div class="panel-head"><div><div class="eyebrow">MISSION CONTROL</div><h2>오늘의 과학 퀘스트</h2></div><div class="user-chip" id="userChip"></div></div><div class="filters"><label>분야<select id="subject"><option>전체</option><option>생명과학</option><option>화학</option><option>물리</option><option>지구과학</option></select></label><label>난이도<select id="level"><option>전체</option><option>중</option><option>상</option></select></label><label>문항 수<select id="count"><option value="5">5문항</option><option value="8">8문항</option><option value="10">10문항</option></select></label><button class="primary" id="startQuiz">퀘스트 시작</button></div><div id="quizArea"><div class="empty"><span>🚀</span><h3>준비됐나요?</h3><p>조건을 선택하고 퀘스트 시작 버튼을 눌러 주세요.</p></div></div></section>
+<section class="panel" id="leaderboardPanel"><div class="panel-head"><div><div class="eyebrow">TOP EXPLORERS</div><h2>🏆 리더보드</h2></div><button class="ghost" id="refreshBoard">새로고침 ↻</button></div><div id="board" class="board"><p class="muted">기록을 불러오는 중…</p></div></section>
+<footer>SCIENCE QUEST PRO <span>·</span> 과학을 탐험하는 가장 즐거운 방법</footer>
+</main><div id="toast" class="toast" role="status"></div><script src="/app.js" defer></script>
+</body></html>
