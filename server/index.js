@@ -200,3 +200,88 @@ app.get("*", (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`SCIENCE QUEST PRO running on port ${PORT}`);
 });
+
+const adminLoginLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  message: { error: "로그인 시도가 너무 많습니다. 잠시 후 다시 시도하세요." }
+});
+
+app.post("/api/admin/login", adminLoginLimit, (req, res) => {
+  const configuredPassword = process.env.ADMIN_PASSWORD;
+  const password = req.body?.password;
+
+  if (!configuredPassword || typeof password !== "string") {
+    return res.status(503).json({
+      error: "관리자 비밀번호가 서버에 설정되지 않았습니다."
+    });
+  }
+
+  const supplied = Buffer.from(password);
+  const expected = Buffer.from(configuredPassword);
+
+  if (
+    supplied.length !== expected.length ||
+    !crypto.timingSafeEqual(supplied, expected)
+  ) {
+    return res.status(401).json({
+      error: "관리자 비밀번호가 올바르지 않습니다."
+    });
+  }
+
+  const token = jwt.sign(
+    { role: "admin" },
+    SECRET,
+    { expiresIn: "30m" }
+  );
+
+  res.json({ token });
+});
+
+app.get("/api/admin/stats", (req, res) => {
+  const authorization = req.headers.authorization || "";
+  const token = authorization.startsWith("Bearer ")
+    ? authorization.slice(7)
+    : "";
+
+  let claims;
+
+  try {
+    claims = jwt.verify(token, SECRET);
+  } catch {
+    return res.status(401).json({
+      error: "관리자 인증이 필요합니다."
+    });
+  }
+
+  if (claims.role !== "admin") {
+    return res.status(403).json({
+      error: "관리자 권한이 없습니다."
+    });
+  }
+
+  const users = db.prepare(
+    "SELECT COUNT(*) AS count FROM users"
+  ).get().count;
+
+  const rounds = db.prepare(
+    "SELECT COUNT(*) AS count FROM scores"
+  ).get().count;
+
+  const scores = db.prepare(`
+    SELECT COALESCE(SUM(score), 0) AS points,
+           COALESCE(SUM(total), 0) AS answered
+    FROM scores
+  `).get();
+
+  const leaderboard = db.prepare(`
+    SELECT u.username, SUM(s.score) AS points
+    FROM users u
+    JOIN scores s ON s.user_id = u.id
+    GROUP BY u.id, u.username
+    ORDER BY points DESC
+    LIMIT 50
+  `).all();
+
+  res.json({ users, rounds, scores, leaderboard });
+});
